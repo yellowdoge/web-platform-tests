@@ -431,9 +431,13 @@ def get_sha1():
 
 def build_manifest():
     """Build manifest of all files in web-platform-tests"""
+    try:
+        os.makedirs(meta_root)
+    except OSError:
+        pass
     with pwd(wpt_root):
         # TODO: Call the manifest code directly
-        call("python", "manifest")
+        call("python", "manifest", "-p", os.path.join(meta_root, "MANIFEST.json"))
 
 
 def install_wptrunner():
@@ -527,7 +531,7 @@ def get_affected_testfiles(files_changed, skip_tests):
     # they are not part of any test.
     files_changed = [f for f in files_changed if not _in_repo_root(f)]
     nontests_changed = set(files_changed)
-    manifest_file = os.path.join(wpt_root, "MANIFEST.json")
+    manifest_file = os.path.join(meta_root, "MANIFEST.json")
     test_types = ["testharness", "reftest", "wdspec"]
 
     wpt_manifest = manifest.load(wpt_root, manifest_file)
@@ -602,12 +606,12 @@ def wptrunner_args(root, files_changed, iterations, browser):
     args.update(browser.wptrunner_args(root))
     args.update({
         "tests_root": wpt_root,
-        "metadata_root": wpt_root,
+        "metadata_root": meta_root,
         "repeat": iterations,
         "config": "%s//wptrunner.default.ini" % (wptrunner_root),
         "test_list": files_changed,
         "restart_on_unexpected": False,
-        "pause_after_test": False
+        "pause_after_test": False,
     })
     wptcommandline.check_args(args)
     return args
@@ -860,6 +864,7 @@ def get_parser():
 def main():
     """Perform check_stability functionality and return exit code."""
     global wpt_root
+    global meta_root
     global wptrunner_root
     global logger
 
@@ -881,6 +886,7 @@ def main():
     setup_logging()
 
     wpt_root = os.path.abspath(os.curdir)
+    meta_root = os.path.expanduser("~/meta/")
     wptrunner_root = os.path.normpath(os.path.join(wpt_root, "tools", "wptrunner"))
 
     if not os.path.exists(args.root):

@@ -1,4 +1,5 @@
 set -ex
 
-./manifest
+mkdir -p ~/meta
+./manifest -p ~/meta/MANIFEST.json
 ./lint
