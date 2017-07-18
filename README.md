@@ -338,7 +338,7 @@ everything that we can.
 OWNERS files are used only to indicate who should be notified of pull
 requests.  If you are interested in receiving notifications of proposed
 changes to tests in a given directory, feel free to add yourself to the
-OWNERS file. After changing an OWNERS file, you must run `wpt
+OWNERS file. After changing an OWNERS file, you must run `./wpt
 update-owners` to ensure the changes are picked up by GitHub; this
 will update the CODEOWNERS file.
 
